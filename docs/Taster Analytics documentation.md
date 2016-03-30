@@ -7,6 +7,7 @@
 - [How do I Implement these?](#how-to-do)
   - [Standard Analytics](#standard)
   - [Custom Behavioural Analytics](#custom)
+  - [Testing](#testing)
 - [Reporting](#reporting)
 
 
@@ -84,8 +85,17 @@ Your analytics are tied to the offsite quick-rate badge, and your pilot-ID.
 
 The way this works is by setting 2 stats counters on pilot pages:
 
-1. Taster Countername: taster.pilot.<pilot\_id>.page
-2. Taster pilot\_id: pilot\_id=<pilot-name>
+1. Taster Countername: taster.pilot.<pilot_id>.page
+2. Taster pilot\_id: pilot_id=<pilot-name>
+
+It's important to note there's 2 identifiers here: Pilot ID, and Pilot name.
+
+There's a very simple difference though:
+
+- Pilot name is created with hyphens: this-is-your-pilot-name
+- While Pilot ID is created with underscores: this_is_your_pilot_ID
+
+They should have the same naming convention.
 
 Your Content Producer will supply you with a pilot ID that you can then use to integrate the badge correctly. Here is documentation to integrate the badge:
 
@@ -101,9 +111,9 @@ The BBC's stats library is available documented here [http://bbc.github.io/echo-
 
 For more custom analytics within the pilot pages and specific interations, you need to create your own counternames and labels following the formats below
 ```
-Countername: taster.pilot.<pilot\_id>.internal.<page\_identifiers>.page
+Countername: taster.pilot.<pilot_id>.internal.<page_identifiers>.page
 
-Labels: pilot\_id=<pilot-name>
+Labels: pilot_id=<pilot-name>
 ```
 
 Please use the hosted version of the javascript library which is available here:
@@ -125,8 +135,8 @@ require(['echo-4.0.2'], function(Echo){
     Enums.ApplicationType.WEB   // App Type
   );
   
-  //set bbc\_site managed label - this label is mandatory and is required to assign data in comscore to the correct BBC product:
-  echo.addManagedLabel(Enums.ManagedLabels.BBC\_SITE, "taster");
+  //set bbc_site managed label - this label is mandatory and is required to assign data in comscore to the correct BBC product:
+  echo.addManagedLabel(Enums.ManagedLabels.BBC_SITE, "taster");
   
   //You can optionally set the version of your application: 
   echo.setAppVersion('1.0.0');
@@ -136,10 +146,6 @@ require(['echo-4.0.2'], function(Echo){
 ```
 You may see some failed calls (probably 401) from this library, don't worry about these, they are calls to a currently disabled analytics system.
 
-You can check whether your implementation is working with this chrome extension
-
-[https://chrome.google.com/webstore/detail/dax-istats-log/jgkkagdpkhpdpddcegfcahbakhefbbga?hl=en-GB](https://chrome.google.com/webstore/detail/dax-istats-log/jgkkagdpkhpdpddcegfcahbakhefbbga?hl=en-GB)
-
 The 2 types of tracking you want to implement translate into 2 simple labels:
 
 ### 1. Where did people go in your experience?
@@ -148,13 +154,13 @@ What we do here is provide more definition of 'what' page someone is on in the e
 
 Your pilot as standard is supplied a countername, which looks a bit like:
 
-`taster.pilot.<pilot\_id>.page`
+`taster.pilot.<pilot_id>.page`
 
 We want to add more detail to it, and it should look like this:
 
-`taster.pilot.<pilot\_id>.internal.<your\_page\_identifier>.page`
+`taster.pilot.<pilot_id>.internal.<your_page_identifier>.page`
 
-We've added 'internal' so that there is the distinction that it is 'within' the pilot, and then `<your\_page\_identifier>` allows you to clearly identify what the page / step is.
+We've added 'internal' so that there is the distinction that it is 'within' the pilot, and then `<your_page_identifier>` allows you to clearly identify what the page / step is.
 
 You will need to clearly label the pages you want to track in a way that when you come back to these names, you'll be able to tell what they are, and what they correspond to.
 
@@ -164,9 +170,9 @@ What we do here is allow our analytics to know when someone's clicked on somethi
 
 We can create specific types of action in our analytics package. They are called 'hidden actions' and have 2 parts to them, plus an identifier that makes the action 'hidden' - something like a 'verb' and a 'noun', and a qualifier:
 ```
-  Noun: action\_name=example\_click
-  Verb: action\_type=click
-  Hidden action: ns\_type=hidden
+  Noun: action_name=example_click
+  Verb: action_type=click
+  Hidden action: ns_type=hidden
 ```
 It's important to name your 'noun' so you can differentiate it from other types of action. Your 'verb' can be more generic, but describing the thing that the person does.
 
@@ -176,34 +182,45 @@ I want to track a 'retry' button and a 'share' button at the end of my experienc
 
 retry button:
 ```
-  action\_name=myexperience\_retry
-  action\_type=click
-  ns\_type=hidden
+  action_name=myexperience_retry
+  action_type=click
+  ns_type=hidden
 ```
 
 
 share button:
 ```
-  action\_name=myexperience\_share
-  action\_type=click
-  ns\_type=hidden
+  action_name=myexperience_share
+  action_type=click
+  ns_type=hidden
 ```
 In order to implement both of these analytics frameworks, as mentioned before, you simply need to use the BBC's standard Echo analytics library, which allows you to set these labels and counternames through some simple Javascript.
 
-Here's how you do it:
+Also – here’s a handy template that will allow you to visualise the tagging strategy that you’re creating: [Taster_pilot_analytics_framework.xlsx](https://myshare.box.com/s/xa5k59pqei3jtdurnh32jzt5eely572a)
 
+<div-id='testing'/>
+###Testing
+You can check whether your implementation is working with this chrome extension. This will allow you to (in Chrome) check that counternames and hidden actions are firing correctly. This is the best, and only way to test your implementation at this point. It's very important to do it:
 
+[https://chrome.google.com/webstore/detail/dax-istats-log/jgkkagdpkhpdpddcegfcahbakhefbbga?hl=en-GB](https://chrome.google.com/webstore/detail/dax-istats-log/jgkkagdpkhpdpddcegfcahbakhefbbga?hl=en-GB)
 
 
 <div id='reporting'/>
 ##Reporting
 
-The standard analytics flow directly into the Taster Dashboard. You don't need to worry about this.
+The standard analytics flow directly into the Taster Dashboard. You don't need to worry about this. You will be given access to the Taster analytics dashboard when you are onboarded. Here is the link:
+
+[Taster dashboard](http://taster-analytics-dashboard.tools.bbc.co.uk)
 
 Custom behavioural analytics will have a little more work for you to do, but we've made it as simple as possible.
 
 Built into the BBC's Digital Analytix package are some pre-built reports that look at Taster pilots. As part of your pilot onboarding process, we will set you up with a subscription to this report and this will run weekly, with a wrapup report at the end, which sums everything up.
 
-It will capture the number of browsers overall who engage with your pilot, and then show you who visit different parts of your pilot, and secondly who interacts with actions in the pilot.
+Please provide during your technical onboarding:
 
-So, all you need to do is wait for the email.
+- Email addresses of the people you wish to receive analytics reports
+- Whether you want them weekly or monthly for the duration of your pilot. (Recommended monthly.)
+
+This report will capture the number of browsers overall who engage with your pilot, and then show you who visit different parts of your pilot, and secondly who interacts with actions in the pilot.
+
+So, all you need to do is wait for the email. 
